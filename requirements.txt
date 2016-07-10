@@ -1,0 +1,6 @@
+Jinja2==2.8
+MarkupSafe==0.23
+python-http-client==2.1.0
+requests==2.10.0
+sendgrid==3.0.3
+tabulate==0.7.5

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import requests
-import api_url
+from api_url import GitHubEndPoint as EndPoint
 
 
 class GithubUserEmail(object):
@@ -21,17 +21,21 @@ class GithubAPIStatus(object):
         self.search_reset_time = None
 
 
-def stargazers_user_ids(user_id, repo):
-    r = requests.get(api_url.stargazers(user_id, repo))
+def stargazers_user_ids(user_id, repo, github_api_auth):
+    r = requests.get(EndPoint.add_auth_info(EndPoint.stargazers(user_id, repo), github_api_auth))
+
+    # raise error when found nothing
+    r.raise_for_status()
+
     return [info['login'] for info in r.json()]
 
 
-def user_emails(user_id):
+def user_emails(user_id, github_api_auth):
     """
     Get email from the profile
     """
 
-    rsp = requests.get(api_url.user_profile(user_id))
+    rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_profile(user_id), github_api_auth))
     rsp = rsp.json()
     ge = GithubUserEmail()
     ge.g_id = rsp['login']
@@ -39,14 +43,14 @@ def user_emails(user_id):
     ge.name = ge.name.encode('utf-8')
     ge.email = rsp['email']
 
-    # TODO user email from the event
+    # TODO user email from events
 
     return ge
 
 
-def stargazers_emails(repo_user_id, repo_name):
-    stargazers_ids = stargazers_user_ids(repo_user_id, repo_name)
-    return [user_emails(user_id) for user_id in stargazers_ids]
+def stargazers_emails(repo_user_id, repo_name, github_api_auth):
+    stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
+    return [user_emails(user_id, github_api_auth) for user_id in stargazers_ids]
 
 
 def format_email(ges):
@@ -59,8 +63,8 @@ def format_email(ges):
     return formatted_email
 
 
-def api_status():
-    rsp = requests.get(api_url.rate_limit())
+def api_status(github_api_auth):
+    rsp = requests.get(EndPoint.add_auth_info(EndPoint.rate_limit(), github_api_auth))
     rsp = rsp.json()
     status = GithubAPIStatus()
     status.core_reset_time = rsp['resources']['core']['reset']
