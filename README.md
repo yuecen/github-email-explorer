@@ -66,7 +66,7 @@ ge-sendgrid --api_user <your_sendgrid_api_user_name>
 ```
 The following image is an real example of email format for ge-sendgrid command.
 
-![Result of rendering template](examples/marketing_email.png)
+> ![Result of rendering template](examples/marketing_email.png)
 
 #### Example of Getting API Status
 

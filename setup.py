@@ -25,8 +25,8 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'ge-explore = github-email-explorer.cli_explore:get_github_email_by_repo',
-            'ge-sendgrid = github-email-explorer.cli_sendgrid:send_email_by_sendgrid'
+            'ge-explore = github_email_explorer.cli_explore:get_github_email_by_repo',
+            'ge-sendgrid = github_email_explorer.cli_sendgrid:send_email_by_sendgrid'
         ]
     }
 )
