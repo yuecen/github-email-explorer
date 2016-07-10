@@ -1,0 +1,7 @@
+<p>Hi {{ to_name }},</p>
+<p>Thank you for trying github-email-explorer!</p>
+
+<p>...</p>
+
+<p>I look forward to seeing you on GitHub :)</p>
+<p>yuecen</p>
