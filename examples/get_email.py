@@ -6,4 +6,4 @@ from github_email_explorer import github_email
 ges = github_email.stargazers_emails('yuecen', 'github-email-explorer')
 
 for ge in ges:
-    print ge.name, ge.email
+    print ge.name, "->", ge.email

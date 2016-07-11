@@ -2,12 +2,9 @@
 
 [![Build Status](https://travis-ci.org/yuecen/github-email-explorer.svg?branch=master)](https://travis-ci.org/yuecen/github-email-explorer)
 
-For people who want to create a email marketing plain for particular group on 
-GitHub, github-email-explorer can send email to the group you want.
-
-There are two main abilities, exploring email and sending email, in 
-github-email-explorer that the concreted commends are ```ge-explore``` and ```ge-sendgrid```. 
-SendGrid is only one email provider in current progress.
+For people who want to create an email marketing plan for particular group on 
+GitHub, github-email-explorer can collect addresses from a repository you want, 
+and then send email content to those email addresses.
 
 #### Installation
 
@@ -15,25 +12,67 @@ SendGrid is only one email provider in current progress.
 pip install github-email-explorer
 ```
 
+There are two main abilities, exploring email and sending email, in 
+github-email-explorer that the concreted commends are ```ge-explore``` and ```ge-sendgrid```. 
+SendGrid is only one email provider at current progress.
+
+```
+$ ge-explore -h
+usage: ge-explore [-h] [--repo REPO] [--action_type ACTION_TYPE]
+                  [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
+                  [--status]
+
+optional arguments:
+  -h, --help                      show this help message and exit
+  --repo REPO                     Repo on Github, type "<account>/<repo>"
+  --action_type ACTION_TYPE       "starred" is the only option now
+  --client_id CLIENT_ID           Github OAuth client ID
+  --client_secret CLIENT_SECRET   Github OAuth client secret
+  --status                        Github API status
+```
+
+```
+$ ge-sendgrid -h
+usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
+                   --subject SUBJECT --from_email FROM_EMAIL
+                   [--explore_starred EXPLORE_STARRED] [--client_id CLIENT_ID]
+                   [--client_secret CLIENT_SECRET] [--list LIST]
+
+optional arguments:
+  -h, --help                         show this help message and exit
+  --api_key API_KEY                  Your KEY of SendGrid API
+  --template_path TEMPLATE_PATH      Your email template
+  --subject SUBJECT                  Subject of email
+  --from_email FROM_EMAIL            Address form
+  --explore_starred EXPLORE_STARRED  Explore a repo people have starred
+  --client_id CLIENT_ID              Github OAuth client ID
+  --client_secret CLIENT_SECRET      Github OAuth client secret
+  --list LIST                        Email list
+```
+
 #### Example of Getting Email List of Stargazers
+
+The GitHub users can do some activities such as starring, watching, or forking 
+on repositories. Email address can be extracted from those activities.
 
 ##### Using Command
 You can get user email by ```ge-explore``` with <user_account>/<repo_name>. For example, 
 
 ```bash
-$ ge-explore --repo yuecen/github-email-explorer
+// default value of action_type is 'starred'
+$ ge-explore --repo yuecen/github-email-explorer --action_type starred
 
 // The email list will be responded in a formatted string, 
 John <John@example.org>; Peter James <James@example.org>;
-
-// You can copy contact list to any email service you have, 
-// then send your email with those contact address.
 ```
+
+You can copy contact list to any email service you have, then send your email 
+with those contact address.
 
 If you encounter the situation of limitation from GitHub server during running 
 the command, please add ```--client_id <your_github_auth_id> --client_secret <your_github_auth_secret>``` with the command above.
 
-You can apply and get client ID and secret from this page.
+You can apply and get *Client ID* and *Client Secret* by [OAuth applications].
 
 <img src="examples/oauth_github.png" width="500">
 
@@ -48,7 +87,7 @@ from github_email_explorer import github_email
 ges = github_email.stargazers_emails('yuecen', 'github-email-explorer')
 
 for ge in ges:
-    print ge.name, ge.email
+    print ge.name, "->", ge.email
 ```
 
 You can find get_email.py file in examples folder, and run it like following.
@@ -57,7 +96,8 @@ You can find get_email.py file in examples folder, and run it like following.
 $ python examples/get_email.py
 
 // example output
-John <John@example.org>; Peter James <James@example.org>;
+John -> John@example.org
+Peter James -> James@example.org
 ```
 
 #### How to Send a Email to GitHub Users from a Particular Repository?
@@ -65,7 +105,7 @@ John <John@example.org>; Peter James <James@example.org>;
 ##### 1. Write Email Content with Template Format
 
 The [Jinja2] is used to render email content in github-email-explorer, the basic 
-[expressions] make you email more flexible for sending to people who have 
+[expressions] make email content more flexible for sending to people they have 
 individual email address.
 
 Here is an example to use following syntax, the file saved to ```examples/marketing_email.txt```
@@ -97,7 +137,7 @@ ge-sendgrid --api_user <your_sendgrid_api_user_name>
 
 The following image is an real example of email format for ge-sendgrid command.
 
-> ![Result of rendering template](examples/marketing_email.png)
+> <img src="examples/marketing_email.png" width="300">
 
 #### Example of Getting API Status
 
