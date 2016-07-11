@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-
+import re
 from setuptools import setup, find_packages
 
+pkg_file = open("github_email_explorer/__init__.py").read()
+metadata = dict(re.findall("__([a-z]+)__\s*=\s*'([^']+)'", pkg_file))
 description = open('README.md').read()
 requirements = [i.strip() for i in open("requirements.txt").readlines()]
 
 setup(
     name='github-email-explorer',
-    description='Get email addresses from repositories that people starred on GitHub',
-    version='0.0.3',
+    description='Tools to get email addresses from repositories that people starred on GitHub, then sent email to many users from the addresses with email template content.',
+    version=metadata['version'],
 
     # Author details
     author='yuecen',
@@ -19,6 +21,8 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
         'Programming Language :: Python',
+        'Topic :: Communications :: Email',
+        'Topic :: Software Development :: Libraries :: Python Modules',
     ],
     keywords='github, email, sendgrid, marketing',
     install_requires=requirements,

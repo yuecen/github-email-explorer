@@ -18,10 +18,10 @@ pip install github-email-explorer
 #### Example of Getting Email List of Stargazers
 
 ##### Using Command
-You can get user email by ```ge-explore``` with a repo name. For example, 
+You can get user email by ```ge-explore``` with <user_account>/<repo_name>. For example, 
 
 ```bash
-$ ge-explore --repo <user_account>/<repo_name>
+$ ge-explore --repo yuecen/github-email-explorer
 
 // The email list will be responded in a formatted string, 
 John <John@example.org>; Peter James <James@example.org>;
@@ -56,7 +56,8 @@ You can find get_email.py file in examples folder, and run it like following.
 ```bash
 $ python examples/get_email.py
 
-yuecen yuecendev+github@gmail.com
+// example output
+John <John@example.org>; Peter James <James@example.org>;
 ```
 
 #### How to Send a Email to GitHub Users from a Particular Repository?
