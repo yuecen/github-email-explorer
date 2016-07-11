@@ -1,5 +1,7 @@
 ## github-email-explorer
 
+[![Build Status](https://travis-ci.org/yuecen/github-email-explorer.svg?branch=master)](https://travis-ci.org/yuecen/github-email-explorer)
+
 For people who want to create a email marketing plain for particular group on 
 GitHub, github-email-explorer can send email to the group you want.
 
@@ -33,7 +35,7 @@ the command, please add ```--client_id <your_github_auth_id> --client_secret <yo
 
 You can apply and get client ID and secret from this page.
 
-![oauth of github](examples/oauth_github.png)
+<img src="examples/oauth_github.png" width="500">
 
 ##### Using Python Script
 
