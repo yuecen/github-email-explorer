@@ -15,23 +15,47 @@ pip install github-email-explorer
 
 #### Example of Getting Email List of Stargazers
 
+##### Using Command
 You can get user email by ```ge-explore``` with a repo name. For example, 
 
 ```bash
 $ ge-explore --repo <user_account>/<repo_name>
+
+// The email list will be responded in a formatted string, 
+John <John@example.org>; Peter James <James@example.org>;
+
+// You can copy contact list to any email service you have, 
+// then send your email with those contact address.
 ```
 
 If you encounter the situation of limitation from GitHub server during running 
 the command, please add ```--client_id <your_github_auth_id> --client_secret <your_github_auth_secret>``` with the command above.
 
-The email list will be responded in a formatted string, which looks like,
+You can apply and get client ID and secret from this page.
 
-```bash
-John <John@example.org>; Peter James <James@example.org>;
+![oauth of github](examples/oauth_github.png)
+
+##### Using Python Script
+
+```python
+from github_email_explorer import github_email
+
+# github_api_auth = ('<your_client_id>', '<your_client_secret>')
+# ges = github_email.stargazers_emails('yuecen', 'github-email-explorer', github_api_auth=github_api_auth)
+
+ges = github_email.stargazers_emails('yuecen', 'github-email-explorer')
+
+for ge in ges:
+    print ge.name, ge.email
 ```
 
-You can copy contact list to any email service you have, then send your email 
-with those contact address.
+You can find get_email.py file in examples folder, and run it like following.
+
+```bash
+$ python examples/get_email.py
+
+yuecen yuecendev+github@gmail.com
+```
 
 #### How to Send a Email to GitHub Users from a Particular Repository?
 
@@ -57,6 +81,9 @@ Here is an example to use following syntax, the file saved to ```examples/market
 
 ##### 2. Send Email
 
+In order to send email for many users flexibly, we combine the email list from 
+result of ge-explore and SendGrid.
+
 ```
 ge-sendgrid --api_user <your_sendgrid_api_user_name> 
             --api_key <your_sendgrid_api_key> 
@@ -64,6 +91,7 @@ ge-sendgrid --api_user <your_sendgrid_api_user_name>
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
             --from_email test@example.com
 ```
+
 The following image is an real example of email format for ge-sendgrid command.
 
 > ![Result of rendering template](examples/marketing_email.png)

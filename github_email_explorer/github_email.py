@@ -48,7 +48,7 @@ def user_emails(user_id, github_api_auth):
     return ge
 
 
-def stargazers_emails(repo_user_id, repo_name, github_api_auth):
+def stargazers_emails(repo_user_id, repo_name, github_api_auth=None):
     stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
     return [user_emails(user_id, github_api_auth) for user_id in stargazers_ids]
 

@@ -18,4 +18,6 @@ class GitHubEndPoint(object):
 
     @staticmethod
     def add_auth_info(url, github_api_auth):
+        if github_api_auth is None:
+            github_api_auth = ('', '')
         return '{}?client_id={}&client_secret={}'.format(url, github_api_auth[0], github_api_auth[1])
