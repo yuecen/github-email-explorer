@@ -124,16 +124,19 @@ Here is an example to use following syntax, the file saved to ```examples/market
 
 ##### 2. Send Email
 
-In order to send email for many users flexibly, we combine the email list from 
-result of ge-explore and SendGrid.
+In order to send email to many users flexibly, we combine the email list from 
+result of ge-explore and SendGrid to approach it.
 
 ```
 ge-sendgrid --api_user <your_sendgrid_api_user_name> 
             --api_key <your_sendgrid_api_key> 
-            --explore_starred <user_account>/<repo_name>
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
             --from_email test@example.com
+            --explore_starred <user_account>/<repo_name>
+            --list "John <John@example.org>; Peter James <James@example.org>"
 ```
+
+```--explore_starred``` and ```--list``` are mutually exclusive.
 
 The following image is an real example of email format for ge-sendgrid command.
 

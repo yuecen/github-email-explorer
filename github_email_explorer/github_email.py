@@ -5,10 +5,13 @@ from api_url import GitHubEndPoint as EndPoint
 
 
 class GithubUserEmail(object):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.g_id = None
-        self.name = None
-        self.email = []
+        self.name = kwargs.get('name', None)
+        self.email = kwargs.get('email', None)
+        if len(args) > 0 and (type(args[0]) is tuple):
+            self.name = args[0][0]
+            self.email = args[0][1]
 
 
 class GithubAPIStatus(object):

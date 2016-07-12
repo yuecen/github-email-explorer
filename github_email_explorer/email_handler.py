@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from github_email import GithubUserEmail
 
 from jinja2 import FileSystemLoader
 from jinja2 import Environment
@@ -6,6 +7,8 @@ from jinja2 import Environment
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Email, Content, Mail
 
+from email.utils import parseaddr
+import re
 import sys
 
 
@@ -21,24 +24,35 @@ class EmailContent(object):
         self.provider = None
 
 
-def parse_email():
-    pass
+def parse_email(address):
+    return parseaddr(address)
 
 
-def send_sendgrid_by_email_list(email_list):
-    pass
+def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
+    email_list = re.split(';', email_list)
+    github_user_emails = [GithubUserEmail(parse_email(address)) for address in email_list if len(address.strip()) > 0]
+
+    send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
+                  email_template=email_template, from_email=from_email, subject=subject)
 
 
-def send_sendgrid_by_ges(sendgrid_api_key=None, email_template=None, github_user_emails=None, from_email=None, subject=None):
+def send_sendgrid_by_ges(github_user_emails=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
+
+    send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
+                  email_template=email_template, from_email=from_email, subject=subject)
+
+
+def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails=None, from_email=None, subject=None):
 
     assert sendgrid_api_key, "SendGrid API key is required"
 
     sg = SendGridAPIClient(apikey=sendgrid_api_key)
+
     from_email = Email(from_email)
     subject = subject
     for ge in github_user_emails:
         to_email = Email(ge.email)
-        content = Content("text/html", email_template.render(to_name=ge.name))
+        content = Content("text/html", email_template.render(to_name=ge.name.decode('utf8')))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
 
@@ -52,4 +66,5 @@ def get_email_template(path):
 
 
 if __name__ == '__main__':
-    pass
+    # print parse_email('test John+github@example.org')
+    send_sendgrid_by_email_list(' <John@example.org>; Peter James <James@example.org>;')
