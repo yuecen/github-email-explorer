@@ -39,6 +39,9 @@ def user_emails(user_id, github_api_auth):
     """
 
     rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_profile(user_id), github_api_auth))
+    # raise error when found nothing
+    rsp.raise_for_status()
+
     rsp = rsp.json()
     ge = GithubUserEmail()
     ge.g_id = rsp['login']
@@ -53,7 +56,16 @@ def user_emails(user_id, github_api_auth):
 
 def stargazers_emails(repo_user_id, repo_name, github_api_auth=None):
     stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
-    return [user_emails(user_id, github_api_auth) for user_id in stargazers_ids]
+    ges = []
+    for user_id in stargazers_ids:
+        try:
+            ges.append(user_emails(user_id, github_api_auth))
+        except requests.exceptions.HTTPError as e:
+            print e
+            # Return email addresses that have received after exception happened
+            return ges
+
+    return ges
 
 
 def format_email(ges):
