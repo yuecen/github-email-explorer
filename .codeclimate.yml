@@ -1,0 +1,10 @@
+engines:
+ radon: 
+   enabled: true
+   config:
+     python_version: 2
+
+# required for grades to appear in web UI
+ratings:
+  paths:
+    - "**.py"
