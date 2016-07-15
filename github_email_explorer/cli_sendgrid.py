@@ -53,7 +53,7 @@ def send_email_by_sendgrid():
 
         # explore starred users email
         github_api_auth = (sendgrid_cli_args.client_id, sendgrid_cli_args.client_secret)
-        ges = github_email.stargazers_emails(sendgrid_cli_args.repo_user, sendgrid_cli_args.repo_name, github_api_auth)
+        ges = github_email.stargazers_email_info(sendgrid_cli_args.repo_user, sendgrid_cli_args.repo_name, github_api_auth)
         # print github_email.format_email(ges)
 
         # read email content from file

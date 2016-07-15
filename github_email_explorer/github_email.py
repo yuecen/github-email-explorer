@@ -43,6 +43,22 @@ def stargazers_user_ids(user_id, repo, github_api_auth):
     # create url
     url = EndPoint.add_auth_info(EndPoint.stargazers(user_id, repo), github_api_auth)
 
+    return request_user_ids_by_roll_pages(url, total_pages, per_page)
+
+
+def forks_user_ids(user_id, repo, github_api_auth):
+    # pagination
+    github_repo = repository(user_id, repo, github_api_auth)
+    per_page = 100
+    total_pages = github_repo.forks_count / per_page
+
+    # create url
+    url = EndPoint.add_auth_info(EndPoint.forks(user_id, repo), github_api_auth)
+
+    return request_user_ids_by_roll_pages(url, total_pages, per_page)
+
+
+def request_user_ids_by_roll_pages(url, total_pages, per_page):
     # loop page with url
     user_ids = []
     for i in range(0, total_pages + 1):
@@ -52,12 +68,40 @@ def stargazers_user_ids(user_id, repo, github_api_auth):
         # raise error when found nothing
         r.raise_for_status()
 
-        user_ids = user_ids + [info['login'] for info in r.json()]
+        # handling result
+        user_ids = user_ids + [info['login'] if 'login' in info else info['owner']['login'] for info in r.json()]
 
     return user_ids
 
 
-def user_emails(user_id, github_api_auth):
+def stargazers_email_info(repo_user_id, repo_name, github_api_auth=None):
+    # get user id
+    stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
+    # get and return email info
+    return users_email_info(stargazers_ids, github_api_auth)
+
+
+def forks_email_info(repo_user_id, repo_name, github_api_auth=None):
+    # get user id
+    forks_ids = forks_user_ids(repo_user_id, repo_name, github_api_auth)
+    # get and return email info
+    return users_email_info(forks_ids, github_api_auth)
+
+
+def users_email_info(action_user_ids, github_api_auth):
+    ges = []
+    for user_id in action_user_ids:
+        try:
+            ges.append(request_user_email(user_id, github_api_auth))
+        except requests.exceptions.HTTPError as e:
+            print e
+            # Return email addresses that have received after exception happened
+            return ges
+
+    return ges
+
+
+def request_user_email(user_id, github_api_auth):
     """
     Get email from the profile
     """
@@ -76,20 +120,6 @@ def user_emails(user_id, github_api_auth):
     # TODO user email from events
 
     return ge
-
-
-def stargazers_emails(repo_user_id, repo_name, github_api_auth=None):
-    stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
-    ges = []
-    for user_id in stargazers_ids:
-        try:
-            ges.append(user_emails(user_id, github_api_auth))
-        except requests.exceptions.HTTPError as e:
-            print e
-            # Return email addresses that have received after exception happened
-            return ges
-
-    return ges
 
 
 def format_email(ges):
@@ -129,7 +159,8 @@ def repository(user_id, repo, github_api_auth):
 
 
 if __name__ == '__main__':
-    print user_emails('yuecen')
-    ges = stargazers_emails('yuecen', 'elk-conf')
+    # print request_user_email('yuecen')
+    ges = stargazers_email_info('yuecen', 'github-email-explorer')
+    print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print format_email(ges)
 

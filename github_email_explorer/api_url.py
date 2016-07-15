@@ -19,6 +19,10 @@ class GitHubEndPoint(object):
         return '{}repos/{}/{}/stargazers'.format(GitHubEndPoint.api_url, user_id, repo)
 
     @staticmethod
+    def forks(user_id, repo):
+        return '{}repos/{}/{}/forks'.format(GitHubEndPoint.api_url, user_id, repo)
+
+    @staticmethod
     def rate_limit():
         return '{}rate_limit'.format(GitHubEndPoint.api_url)
 

@@ -12,7 +12,7 @@ class ExploreCliArgs(object):
     def __init__(self):
         p = argparse.ArgumentParser(prog='ge-explore')
         p.add_argument('--repo', help='Repo on Github, type "<account>/<repo>"')
-        p.add_argument('--action_type', default='starred', help='"starred" is the only option now')
+        p.add_argument('--action_type', default='starred', help='"starred" and "fork" are the only two options now')
         p.add_argument('--client_id', help='Github OAuth client ID')
         p.add_argument('--client_secret', help='Github OAuth client secret')
         p.add_argument('--status', action='store_true', help='Github API status')
@@ -51,10 +51,17 @@ def get_github_email_by_repo():
         return
 
     # get repo from explore_cli_args
-    if explore_cli_args.action_type == 'starred':
-        ges = github_email.stargazers_emails(explore_cli_args.repo_user, explore_cli_args.repo_name, github_api_auth)
+    for act_type in explore_cli_args.action_type:
+        ges = select_builder(act_type)(explore_cli_args.repo_user, explore_cli_args.repo_name, github_api_auth)
     print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print github_email.format_email(ges)
+
+
+def select_builder(act_type):
+    return {
+        'starred': github_email.stargazers_email_info,
+        'fork': github_email.forks_email_info,
+    }[act_type]
 
 
 if __name__ == '__main__':
