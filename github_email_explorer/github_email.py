@@ -24,13 +24,37 @@ class GithubAPIStatus(object):
         self.search_reset_time = None
 
 
+class GithubRepository(object):
+    def __init__(self):
+        self.repo_id = None
+        self.name = None
+        self.description = None
+        self.stargazers_count = 0
+        self.watchers_count = 0
+        self.forks_count = 0
+
+
 def stargazers_user_ids(user_id, repo, github_api_auth):
-    r = requests.get(EndPoint.add_auth_info(EndPoint.stargazers(user_id, repo), github_api_auth))
+    # pagination
+    github_repo = repository(user_id, repo, github_api_auth)
+    per_page = 100
+    total_pages = github_repo.stargazers_count / per_page
 
-    # raise error when found nothing
-    r.raise_for_status()
+    # create url
+    url = EndPoint.add_auth_info(EndPoint.stargazers(user_id, repo), github_api_auth)
 
-    return [info['login'] for info in r.json()]
+    # loop page with url
+    user_ids = []
+    for i in range(0, total_pages + 1):
+        url = EndPoint.pagination(url, page=(i + 1), per_page=per_page)
+        r = requests.get(url)
+
+        # raise error when found nothing
+        r.raise_for_status()
+
+        user_ids = user_ids + [info['login'] for info in r.json()]
+
+    return user_ids
 
 
 def user_emails(user_id, github_api_auth):
@@ -89,6 +113,19 @@ def api_status(github_api_auth):
     status.search_limit = rsp['resources']['search']['limit']
     status.search_remaining = rsp['resources']['search']['remaining']
     return status
+
+
+def repository(user_id, repo, github_api_auth):
+    rsp = requests.get(EndPoint.add_auth_info(EndPoint.repository(user_id, repo), github_api_auth))
+    rsp = rsp.json()
+    repo = GithubRepository()
+    repo.repo_id = rsp['id']
+    repo.name = rsp['name']
+    repo.description = rsp['description']
+    repo.stargazers_count = rsp['stargazers_count']
+    repo.watchers_count = rsp['watchers_count']
+    repo.forks_count = rsp['forks_count']
+    return repo
 
 
 if __name__ == '__main__':

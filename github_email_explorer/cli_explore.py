@@ -53,7 +53,7 @@ def get_github_email_by_repo():
     # get repo from explore_cli_args
     if explore_cli_args.action_type == 'starred':
         ges = github_email.stargazers_emails(explore_cli_args.repo_user, explore_cli_args.repo_name, github_api_auth)
-    print 'Total: {}'.format(len(ges))
+    print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print github_email.format_email(ges)
 
 
