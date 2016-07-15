@@ -1,6 +1,7 @@
 ## github-email-explorer
 
 [![Build Status](https://travis-ci.org/yuecen/github-email-explorer.svg?branch=master)](https://travis-ci.org/yuecen/github-email-explorer)
+[![Code Climate](https://codeclimate.com/github/yuecen/github-email-explorer/badges/gpa.svg)](https://codeclimate.com/github/yuecen/github-email-explorer)
 
 For people who want to create an email marketing plan for particular group on 
 GitHub, github-email-explorer can collect addresses from a repository you want, 
