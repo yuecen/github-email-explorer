@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
 import requests
 from api_url import GitHubEndPoint as EndPoint
 
@@ -34,28 +35,34 @@ class GithubRepository(object):
         self.forks_count = 0
 
 
-def stargazers_user_ids(user_id, repo, github_api_auth):
-    # pagination
-    github_repo = repository(user_id, repo, github_api_auth)
-    per_page = 100
-    total_pages = github_repo.stargazers_count / per_page
-
-    # create url
-    url = EndPoint.add_auth_info(EndPoint.stargazers(user_id, repo), github_api_auth)
-
-    return request_user_ids_by_roll_pages(url, total_pages, per_page)
+def select_end_porint_builder(act_type):
+    return {
+        'starred': EndPoint.stargazers,
+        'fork': EndPoint.forks,
+    }[act_type]
 
 
-def forks_user_ids(user_id, repo, github_api_auth):
-    # pagination
-    github_repo = repository(user_id, repo, github_api_auth)
-    per_page = 100
-    total_pages = github_repo.forks_count / per_page
+def select_action_count(github_repo, action_type):
+    if action_type == 'starred':
+        return github_repo.stargazers_count
+    if action_type == 'fork':
+        return github_repo.forks_count
 
-    # create url
-    url = EndPoint.add_auth_info(EndPoint.forks(user_id, repo), github_api_auth)
 
-    return request_user_ids_by_roll_pages(url, total_pages, per_page)
+def integrate_user_ids(user_id, repo, actions, github_api_auth):
+    user_ids = []
+    for action_type in actions:
+        # get repo
+        github_repo = repository(user_id, repo, github_api_auth)
+        # pagination
+        per_page = 100
+        total_pages = select_action_count(github_repo, action_type) / per_page
+        # create url
+        url = EndPoint.add_auth_info(select_end_porint_builder(action_type)(user_id, repo), github_api_auth)
+        # get id by rolling pages
+        user_ids = user_ids + request_user_ids_by_roll_pages(url, total_pages, per_page)
+
+    return OrderedDict.fromkeys(user_ids).keys()
 
 
 def request_user_ids_by_roll_pages(url, total_pages, per_page):
@@ -74,18 +81,11 @@ def request_user_ids_by_roll_pages(url, total_pages, per_page):
     return user_ids
 
 
-def stargazers_email_info(repo_user_id, repo_name, github_api_auth=None):
-    # get user id
-    stargazers_ids = stargazers_user_ids(repo_user_id, repo_name, github_api_auth)
+def collect_email_info(repo_user_id, repo_name, actions, github_api_auth=None):
+    # get user ids
+    user_ids = integrate_user_ids(repo_user_id, repo_name, actions, github_api_auth)
     # get and return email info
-    return users_email_info(stargazers_ids, github_api_auth)
-
-
-def forks_email_info(repo_user_id, repo_name, github_api_auth=None):
-    # get user id
-    forks_ids = forks_user_ids(repo_user_id, repo_name, github_api_auth)
-    # get and return email info
-    return users_email_info(forks_ids, github_api_auth)
+    return users_email_info(user_ids, github_api_auth)
 
 
 def users_email_info(action_user_ids, github_api_auth):
@@ -126,7 +126,6 @@ def format_email(ges):
     """
     John <John@example.org>; Peter James <James@example.org>
     """
-
     formatted_email = ['{} <{}>'.format(ge.name, ge.email) for ge in ges if ge.email]
     formatted_email = '; '.join(formatted_email)
     return formatted_email
@@ -160,7 +159,6 @@ def repository(user_id, repo, github_api_auth):
 
 if __name__ == '__main__':
     # print request_user_email('yuecen')
-    ges = stargazers_email_info('yuecen', 'github-email-explorer')
+    ges = collect_email_info('yuecen', 'github-email-explorer', ['starred'])
     print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print format_email(ges)
-
