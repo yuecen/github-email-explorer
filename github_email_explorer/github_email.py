@@ -37,16 +37,19 @@ class GithubRepository(object):
 
 def select_end_porint_builder(act_type):
     return {
-        'starred': EndPoint.stargazers,
+        'star': EndPoint.stargazers,
         'fork': EndPoint.forks,
+        'watch': EndPoint.watchers,
     }[act_type]
 
 
 def select_action_count(github_repo, action_type):
-    if action_type == 'starred':
+    if action_type == 'star':
         return github_repo.stargazers_count
     if action_type == 'fork':
         return github_repo.forks_count
+    if action_type == 'watch':
+        return github_repo.watchers_count
 
 
 def integrate_user_ids(user_id, repo, actions, github_api_auth):
@@ -159,6 +162,6 @@ def repository(user_id, repo, github_api_auth):
 
 if __name__ == '__main__':
     # print request_user_email('yuecen')
-    ges = collect_email_info('yuecen', 'github-email-explorer', ['starred'])
+    ges = collect_email_info('yuecen', 'github-email-explorer', ['star'])
     print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print format_email(ges)

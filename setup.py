@@ -9,7 +9,7 @@ requirements = [i.strip() for i in open("requirements.txt").readlines()]
 
 setup(
     name='github-email-explorer',
-    description='A tool to get email addresses from starred list of repositories on GitHub, and then send email to those addresses with template content.',
+    description='A tool to get email addresses from action types such as starred, watching or fork on GitHub repositories, and then send email content to those addresses with template.',
     version=metadata['version'],
 
     # Author details

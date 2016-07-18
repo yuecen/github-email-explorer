@@ -26,7 +26,7 @@ usage: ge-explore [-h] [--repo REPO] [--action_type ACTION_TYPE]
 optional arguments:
   -h, --help                      show this help message and exit
   --repo REPO                     Repo on Github, type "<account>/<repo>"
-  --action_type ACTION_TYPE       starred" and "fork" are the only two options now
+  --action_type ACTION_TYPE       "star", "fork" and "watch" are the only three options now
   --client_id CLIENT_ID           Github OAuth client ID
   --client_secret CLIENT_SECRET   Github OAuth client secret
   --status                        Github API status
@@ -47,7 +47,7 @@ optional arguments:
   --subject SUBJECT                           Subject of email
   --from_email FROM_EMAIL                     Address form
   --repo REPO                                 Repo on Github, type "<account>/<repo>"
-  --action_type ACTION_TYPE [ACTION_TYPE ...] "starred" and "fork" are the only two options now
+  --action_type ACTION_TYPE [ACTION_TYPE ...] "star", "fork" and "watch" are the only three options now
   --client_id CLIENT_ID                       Github OAuth client ID
   --client_secret CLIENT_SECRET               Github OAuth client secret
   --list LIST                                 Email list
@@ -62,8 +62,8 @@ on repositories. Email address can be extracted from those activities.
 You can get user email by ```ge-explore``` with ```<user_account>/<repo_name>```. For example, 
 
 ```bash
-// default value of action_type is 'starred'
-$ ge-explore --repo yuecen/github-email-explorer --action_type starred
+// default value of action_type is 'star'
+$ ge-explore --repo yuecen/github-email-explorer --action_type star
 
 // The email list will be responded in a formatted string, 
 John <John@example.org>; Peter James <James@example.org>;
@@ -85,9 +85,9 @@ You can apply and get *Client ID* and *Client Secret* by [OAuth applications].
 from github_email_explorer import github_email
 
 # github_api_auth = ('<your_client_id>', '<your_client_secret>')
-# ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['starred'], github_api_auth=github_api_auth)
+# ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star'], github_api_auth=github_api_auth)
 
-ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['starred'])
+ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star'])
 
 for ge in ges:
     print ge.name, "->", ge.email

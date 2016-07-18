@@ -17,7 +17,7 @@ class SendGridCliArgs(object):
         p.add_argument('--subject', required=True, help='Subject of email')
         p.add_argument('--from_email', required=True, help='Address form')
         p.add_argument('--repo', help='Repo on Github, type "<account>/<repo>"')
-        p.add_argument('--action_type', default='starred', nargs='+', help='"starred" and "fork" are the only two options now')
+        p.add_argument('--action_type', default='star', nargs='+', help='"star", "fork" and "watch" are the only three options now')
         p.add_argument('--client_id', help='Github OAuth client ID')
         p.add_argument('--client_secret', help='Github OAuth client secret')
         p.add_argument('--list', help='Email list')
@@ -36,7 +36,7 @@ class SendGridCliArgs(object):
         self.action_type = args.action_type
         self.list = args.list
         if (self.list is not None) and (self.repo is not None):
-            raise ValueError("list and explore_starred is exclusive")
+            raise ValueError("list and repo is exclusive")
 
         self.template_path = args.template_path
         self.subject = args.subject
@@ -53,7 +53,7 @@ def send_email_by_sendgrid():
 
     if sendgrid_cli_args.repo:
 
-        # explore starred users email
+        # explore users email by action types
         github_api_auth = (sendgrid_cli_args.client_id, sendgrid_cli_args.client_secret)
         ges = github_email.collect_email_info(sendgrid_cli_args.repo_user, sendgrid_cli_args.repo_name, sendgrid_cli_args.action_type, github_api_auth)
         print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))

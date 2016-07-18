@@ -23,6 +23,10 @@ class GitHubEndPoint(object):
         return '{}repos/{}/{}/forks'.format(GitHubEndPoint.api_url, user_id, repo)
 
     @staticmethod
+    def watchers(user_id, repo):
+        return '{}repos/{}/{}/subscribers'.format(GitHubEndPoint.api_url, user_id, repo)
+
+    @staticmethod
     def rate_limit():
         return '{}rate_limit'.format(GitHubEndPoint.api_url)
 

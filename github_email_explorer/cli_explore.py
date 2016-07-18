@@ -12,7 +12,7 @@ class ExploreCliArgs(object):
     def __init__(self):
         p = argparse.ArgumentParser(prog='ge-explore')
         p.add_argument('--repo', help='Repo on Github, type "<account>/<repo>"')
-        p.add_argument('--action_type', default='starred', nargs='+', help='"starred" and "fork" are the only two options now')
+        p.add_argument('--action_type', default='star', nargs='+', help='"star", "fork" and "watch" are the only three options now')
         p.add_argument('--client_id', help='Github OAuth client ID')
         p.add_argument('--client_secret', help='Github OAuth client secret')
         p.add_argument('--status', action='store_true', help='Github API status')
