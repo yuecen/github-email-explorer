@@ -114,7 +114,7 @@ individual email address.
 Here is an example to use following syntax, the file saved to ```examples/marketing_email.txt```
 
 ```
-<p>Hi {{ to_name }},</p>
+<p>Hi {{ github_user.name }}({{ github_user.g_id }}),</p>
 <p>Thank you for trying github-email-explorer!</p>
 
 <p>...</p>

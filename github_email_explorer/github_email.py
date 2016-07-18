@@ -117,7 +117,6 @@ def request_user_email(user_id, github_api_auth):
     ge = GithubUserEmail()
     ge.g_id = rsp['login']
     ge.name = rsp['name'] if rsp['name'] else rsp['login']
-    ge.name = ge.name.encode('utf-8')
     ge.email = rsp['email']
 
     # TODO user email from events

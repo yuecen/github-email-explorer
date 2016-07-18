@@ -25,7 +25,8 @@ class EmailContent(object):
 
 
 def parse_email(address):
-    return parseaddr(address)
+    name, email = parseaddr(address)
+    return name.decode('utf8'), email
 
 
 def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
@@ -52,7 +53,7 @@ def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails
     subject = subject
     for ge in github_user_emails:
         to_email = Email(ge.email)
-        content = Content("text/html", email_template.render(to_name=ge.name.decode('utf8')))
+        content = Content("text/html", email_template.render(github_user=ge))
         mail = Mail(from_email, subject, to_email, content)
         response = sg.client.mail.send.post(request_body=mail.get())
 
