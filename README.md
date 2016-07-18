@@ -35,20 +35,22 @@ optional arguments:
 ```
 $ ge-sendgrid -h
 usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
-                   --subject SUBJECT --from_email FROM_EMAIL
-                   [--explore_starred EXPLORE_STARRED] [--client_id CLIENT_ID]
-                   [--client_secret CLIENT_SECRET] [--list LIST]
+                   --subject SUBJECT --from_email FROM_EMAIL [--repo REPO]
+                   [--action_type ACTION_TYPE [ACTION_TYPE ...]]
+                   [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
+                   [--list LIST]
 
 optional arguments:
-  -h, --help                         show this help message and exit
-  --api_key API_KEY                  Your KEY of SendGrid API
-  --template_path TEMPLATE_PATH      Your email template
-  --subject SUBJECT                  Subject of email
-  --from_email FROM_EMAIL            Address form
-  --explore_starred EXPLORE_STARRED  Explore a repo people have starred
-  --client_id CLIENT_ID              Github OAuth client ID
-  --client_secret CLIENT_SECRET      Github OAuth client secret
-  --list LIST                        Email list
+  -h, --help                                  show this help message and exit
+  --api_key API_KEY                           Your KEY of SendGrid API
+  --template_path TEMPLATE_PATH               Your email template
+  --subject SUBJECT                           Subject of email
+  --from_email FROM_EMAIL                     Address form
+  --repo REPO                                 Repo on Github, type "<account>/<repo>"
+  --action_type ACTION_TYPE [ACTION_TYPE ...] "starred" and "fork" are the only two options now
+  --client_id CLIENT_ID                       Github OAuth client ID
+  --client_secret CLIENT_SECRET               Github OAuth client secret
+  --list LIST                                 Email list
 ```
 
 #### Example of Getting Email List of Stargazers
@@ -57,7 +59,7 @@ The GitHub users can do some activities such as starring, watching, or forking
 on repositories. Email address can be extracted from those activities.
 
 ##### Using Command
-You can get user email by ```ge-explore``` with <user_account>/<repo_name>. For example, 
+You can get user email by ```ge-explore``` with ```<user_account>/<repo_name>```. For example, 
 
 ```bash
 // default value of action_type is 'starred'
@@ -133,11 +135,11 @@ ge-sendgrid --api_user <your_sendgrid_api_user_name>
             --api_key <your_sendgrid_api_key> 
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
             --from_email test@example.com
-            --explore_starred <user_account>/<repo_name>
+            --repo <user_account>/<repo_name>
             --list "John <John@example.org>; Peter James <James@example.org>"
 ```
 
-```--explore_starred``` and ```--list``` are mutually exclusive.
+```--repo``` and ```--list``` are mutually exclusive.
 
 The following image is an real example of email format for ge-sendgrid command.
 

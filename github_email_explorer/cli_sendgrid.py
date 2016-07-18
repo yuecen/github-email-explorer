@@ -16,7 +16,8 @@ class SendGridCliArgs(object):
         p.add_argument('--template_path', help='Your email template')
         p.add_argument('--subject', required=True, help='Subject of email')
         p.add_argument('--from_email', required=True, help='Address form')
-        p.add_argument('--explore_starred', help='Explore a repo people have starred')
+        p.add_argument('--repo', help='Repo on Github, type "<account>/<repo>"')
+        p.add_argument('--action_type', default='starred', nargs='+', help='"starred" and "fork" are the only two options now')
         p.add_argument('--client_id', help='Github OAuth client ID')
         p.add_argument('--client_secret', help='Github OAuth client secret')
         p.add_argument('--list', help='Email list')
@@ -25,15 +26,16 @@ class SendGridCliArgs(object):
 
         self.api_key = args.api_key
 
-        self.explore_starred = args.explore_starred
-        if self.explore_starred:
-            tmp = re.split('/', self.explore_starred)
+        self.repo = args.repo
+        if self.repo:
+            tmp = re.split('/', self.repo)
             assert len(tmp) == 2, "repo format is not correct"
 
             self.repo_user, self.repo_name = tmp[0], tmp[1]
 
+        self.action_type = args.action_type
         self.list = args.list
-        if (self.list is not None) and (self.explore_starred is not None):
+        if (self.list is not None) and (self.repo is not None):
             raise ValueError("list and explore_starred is exclusive")
 
         self.template_path = args.template_path
@@ -49,12 +51,12 @@ def send_email_by_sendgrid():
     """
     sendgrid_cli_args = SendGridCliArgs()
 
-    if sendgrid_cli_args.explore_starred:
+    if sendgrid_cli_args.repo:
 
         # explore starred users email
         github_api_auth = (sendgrid_cli_args.client_id, sendgrid_cli_args.client_secret)
-        ges = github_email.collect_email_info(sendgrid_cli_args.repo_user, sendgrid_cli_args.repo_name, ['starred'], github_api_auth)
-        # print github_email.format_email(ges)
+        ges = github_email.collect_email_info(sendgrid_cli_args.repo_user, sendgrid_cli_args.repo_name, sendgrid_cli_args.action_type, github_api_auth)
+        print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
 
         # read email content from file
         email_template = get_email_template(sendgrid_cli_args.template_path)
