@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from collections import namedtuple
 from datetime import datetime
 from tabulate import tabulate
 import argparse
@@ -8,11 +8,15 @@ import re
 import github_email
 
 
+def record_args(name, d):
+    return namedtuple(name, d.keys())(**d)
+
+
 class ExploreCliArgs(object):
     def __init__(self):
         p = argparse.ArgumentParser(prog='ge-explore')
-        p.add_argument('--repo', help='Repo on Github, type "<account>/<repo>"')
-        p.add_argument('--action_type', default='star', nargs='+', help='"star", "fork" and "watch" are the only three options now')
+        p.add_argument('--repo', help='Repo on Github, type "<owner>/<repo>"')
+        p.add_argument('--action_type', default=['star'], nargs='+', help='"star", "fork" and "watch" are the only three options now')
         p.add_argument('--client_id', help='Github OAuth client ID')
         p.add_argument('--client_secret', help='Github OAuth client secret')
         p.add_argument('--status', action='store_true', help='Github API status')
@@ -20,13 +24,11 @@ class ExploreCliArgs(object):
         args = p.parse_args()
 
         self.repo = args.repo
-        self.repo_user = None
-        self.repo_name = None
         if self.repo:
             tmp = re.split('/', self.repo)
             assert len(tmp) == 2, "repo format is not correct"
 
-            self.repo_user, self.repo_name = tmp[0], tmp[1]
+            self.repo = record_args('repo', {'owner': tmp[0], 'name': tmp[1]})
 
         self.action_type = args.action_type
         self.client_id = args.client_id if args.client_id else ''
@@ -51,7 +53,7 @@ def get_github_email_by_repo():
         return
 
     # handle action_type
-    ges = github_email.collect_email_info(explore_cli_args.repo_user, explore_cli_args.repo_name, explore_cli_args.action_type, github_api_auth)
+    ges = github_email.collect_email_info(explore_cli_args.repo.owner, explore_cli_args.repo.name, explore_cli_args.action_type, github_api_auth)
     print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
     print github_email.format_email(ges)
 

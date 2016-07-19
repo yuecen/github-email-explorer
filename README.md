@@ -17,56 +17,20 @@ There are two main abilities, exploring email and sending email, in
 github-email-explorer that the concreted commends are ```ge-explore``` and ```ge-sendgrid```. 
 SendGrid is only one email provider at current progress.
 
-```
-$ ge-explore -h
-usage: ge-explore [-h] [--repo REPO] [--action_type ACTION_TYPE]
-                  [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
-                  [--status]
-
-optional arguments:
-  -h, --help                      show this help message and exit
-  --repo REPO                     Repo on Github, type "<account>/<repo>"
-  --action_type ACTION_TYPE       "star", "fork" and "watch" are the only three options now
-  --client_id CLIENT_ID           Github OAuth client ID
-  --client_secret CLIENT_SECRET   Github OAuth client secret
-  --status                        Github API status
-```
-
-```
-$ ge-sendgrid -h
-usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
-                   --subject SUBJECT --from_email FROM_EMAIL [--repo REPO]
-                   [--action_type ACTION_TYPE [ACTION_TYPE ...]]
-                   [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
-                   [--list LIST]
-
-optional arguments:
-  -h, --help                                  show this help message and exit
-  --api_key API_KEY                           Your KEY of SendGrid API
-  --template_path TEMPLATE_PATH               Your email template
-  --subject SUBJECT                           Subject of email
-  --from_email FROM_EMAIL                     Address form
-  --repo REPO                                 Repo on Github, type "<account>/<repo>"
-  --action_type ACTION_TYPE [ACTION_TYPE ...] "star", "fork" and "watch" are the only three options now
-  --client_id CLIENT_ID                       Github OAuth client ID
-  --client_secret CLIENT_SECRET               Github OAuth client secret
-  --list LIST                                 Email list
-```
-
-#### Example of Getting Email List of Stargazers
+#### Example of Getting Email Addresses from Stargazers, Forks or Watchers
 
 The GitHub users can do some activities such as starring, watching, or forking 
 on repositories. Email address can be extracted from those activities.
 
 ##### Using Command
-You can get user email by ```ge-explore``` with ```<user_account>/<repo_name>```. For example, 
+You can get user email by ```ge-explore``` with ```<owner>/<repo>```. For example, 
 
 ```bash
-// default value of action_type is 'star'
-$ ge-explore --repo yuecen/github-email-explorer --action_type star
 
-// The email list will be responded in a formatted string, 
+$ ge-explore --repo yuecen/github-email-explorer --action_type star fork watch
+ 
 John <John@example.org>; Peter James <James@example.org>;
+// The email addresses are responded in a formatted string.
 ```
 
 You can copy contact list to any email service you have, then send your email 
@@ -115,7 +79,7 @@ Here is an example to use following syntax, the file saved to ```examples/market
 
 ```
 <p>Hi {{ github_user.name }}({{ github_user.g_id }}),</p>
-<p>Thank you for trying github-email-explorer!</p>
+<p>Thank you for trying {{ repo.owner }}/{{ repo.name }}!</p>
 
 <p>...</p>
 
@@ -123,7 +87,7 @@ Here is an example to use following syntax, the file saved to ```examples/market
 <p>yuecen</p>
 ```
 
-```{{ to_name }}``` is the syntax to assign value in runtime stage for client name.
+```{{ ... }}``` is the syntax to assign value in runtime stage for email content.
 
 ##### 2. Send Email
 
@@ -135,7 +99,7 @@ ge-sendgrid --api_user <your_sendgrid_api_user_name>
             --api_key <your_sendgrid_api_key> 
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
             --from_email test@example.com
-            --repo <user_account>/<repo_name>
+            --repo <owner>/<repo>
             --list "John <John@example.org>; Peter James <James@example.org>"
 ```
 
@@ -173,6 +137,44 @@ Resource Type      Limit    Remaining  Reset Time
 ---------------  -------  -----------  --------------------
 Core                5000         5000  2016-07-06T07:59:47Z
 Search                30           30  2016-07-06T07:00:47Z
+```
+
+#### Command Usage
+
+```
+$ ge-explore -h
+usage: ge-explore [-h] [--repo REPO] [--action_type ACTION_TYPE]
+                  [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
+                  [--status]
+
+optional arguments:
+  -h, --help                      show this help message and exit
+  --repo REPO                     Repo on Github, type "<owner>/<repo>"
+  --action_type ACTION_TYPE       "star", "fork" and "watch" are the only three options now
+  --client_id CLIENT_ID           Github OAuth client ID
+  --client_secret CLIENT_SECRET   Github OAuth client secret
+  --status                        Github API status
+```
+
+```
+$ ge-sendgrid -h
+usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
+                   --subject SUBJECT --from_email FROM_EMAIL [--repo REPO]
+                   [--action_type ACTION_TYPE [ACTION_TYPE ...]]
+                   [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
+                   [--list LIST]
+
+optional arguments:
+  -h, --help                                  show this help message and exit
+  --api_key API_KEY                           Your KEY of SendGrid API
+  --template_path TEMPLATE_PATH               Your email template
+  --subject SUBJECT                           Subject of email
+  --from_email FROM_EMAIL                     Address form
+  --repo REPO                                 Repo on Github, type "<owner>/<repo>"
+  --action_type ACTION_TYPE [ACTION_TYPE ...] "star", "fork" and "watch" are the only three options now
+  --client_id CLIENT_ID                       Github OAuth client ID
+  --client_secret CLIENT_SECRET               Github OAuth client secret
+  --list LIST                                 Email list
 ```
 
 [rate limit]:https://developer.github.com/v3/rate_limit/

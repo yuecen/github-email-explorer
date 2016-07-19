@@ -63,9 +63,28 @@ def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails
 
 
 def get_email_template(path):
-    return template_env.get_template(path)
+    return GitHubEmailTemplate(path)
+
+
+class GitHubEmailTemplate(object):
+    def __init__(self, template_path):
+        self.template_path = template_path
+        self._email_template = template_env.get_template(template_path)
+
+        self.repo = None
+
+    def render(self, **kwargs):
+        return self._email_template.render(kwargs, repo=self.repo)
 
 
 if __name__ == '__main__':
-    # print parse_email('test John+github@example.org')
-    send_sendgrid_by_email_list(' <John@example.org>; Peter James <James@example.org>;')
+    # send_sendgrid_by_email_list(' <John@example.org>; Peter James <James@example.org>;')
+
+    def record_args(name, d):
+        from collections import namedtuple
+        return namedtuple(name, d.keys())(**d)
+
+    gt = GitHubEmailTemplate('../examples/marketing_email.txt')
+    gt.repo = record_args('repo', {'owner': 'yuecen', 'name': 'github-email-explorer'})
+    ge = GithubUserEmail(('test', 'test@example.com'))
+    print gt.render(github_user=ge)

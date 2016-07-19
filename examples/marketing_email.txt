@@ -1,5 +1,5 @@
 <p>Hi {{ github_user.name }}({{ github_user.g_id }}),</p>
-<p>Thank you for trying github-email-explorer!</p>
+<p>Thank you for trying {{ repo.owner }}/{{ repo.name }}!</p>
 
 <p>...</p>
 
