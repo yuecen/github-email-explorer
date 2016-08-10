@@ -29,7 +29,7 @@ You can get user email by ```ge-explore``` with ```<owner>/<repo>```. For exampl
 
 $ ge-explore --repo yuecen/github-email-explorer --action_type star fork watch
  
-John <John@example.org>; Peter James <James@example.org>;
+John (john2) <John@example.org>; Peter James (pjames) <James@example.org>;
 // The email addresses are responded in a formatted string.
 ```
 
@@ -78,7 +78,7 @@ individual email address.
 Here is an example to use following syntax, the file saved to ```examples/marketing_email.txt```
 
 ```
-<p>Hi {{ github_user.name }}({{ github_user.g_id }}),</p>
+<p>Hi {{ github_user.name }} ({{ github_user.g_id }}),</p>
 <p>Thank you for trying {{ repo.owner }}/{{ repo.name }}!</p>
 
 <p>...</p>
@@ -87,7 +87,7 @@ Here is an example to use following syntax, the file saved to ```examples/market
 <p>yuecen</p>
 ```
 
-```{{ ... }}``` is the syntax to assign value in runtime stage for email content.
+Using the syntax ```{{ ... }}``` to assign value in runtime stage for email content.
 
 ##### 2. Send Email
 

@@ -1,4 +1,4 @@
-<p>Hi {{ github_user.name }}({{ github_user.g_id }}),</p>
+<p>Hi {{ github_user.name }} ({{ github_user.g_id }}),</p>
 <p>Thank you for trying {{ repo.owner }}/{{ repo.name }}!</p>
 
 <p>...</p>

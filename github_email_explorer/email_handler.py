@@ -7,7 +7,6 @@ from jinja2 import Environment
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Email, Content, Mail
 
-from email.utils import parseaddr
 import re
 import sys
 
@@ -25,8 +24,10 @@ class EmailContent(object):
 
 
 def parse_email(address):
-    name, email = parseaddr(address)
-    return name.decode('utf8'), email
+    r = re.match('(?P<name>.*)\s*\((?P<g_id>.*)\)\s<(?P<email>.*?)>', address)
+    e = r.groupdict()
+    name, g_id, email = e['name'], e['g_id'], e['email']
+    return name.decode('utf8'), g_id, email
 
 
 def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
@@ -38,6 +39,7 @@ def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, email_te
 
 
 def send_sendgrid_by_ges(github_user_emails=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
+    github_user_emails = [ge for ge in github_user_emails if ge.email]
 
     send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
                   email_template=email_template, from_email=from_email, subject=subject)
@@ -50,7 +52,6 @@ def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails
     sg = SendGridAPIClient(apikey=sendgrid_api_key)
 
     from_email = Email(from_email)
-    subject = subject
     for ge in github_user_emails:
         to_email = Email(ge.email)
         content = Content("text/html", email_template.render(github_user=ge))

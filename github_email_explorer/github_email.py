@@ -12,7 +12,8 @@ class GithubUserEmail(object):
         self.email = kwargs.get('email', None)
         if len(args) > 0 and (type(args[0]) is tuple):
             self.name = args[0][0]
-            self.email = args[0][1]
+            self.g_id = args[0][1]
+            self.email = args[0][2]
 
 
 class GithubAPIStatus(object):
@@ -126,9 +127,9 @@ def request_user_email(user_id, github_api_auth):
 
 def format_email(ges):
     """
-    John <John@example.org>; Peter James <James@example.org>
+    John (john2) <John@example.org>; Peter James (pjames) <James@example.org>
     """
-    formatted_email = ['{} <{}>'.format(ge.name, ge.email) for ge in ges if ge.email]
+    formatted_email = ['{} ({}) <{}>'.format(ge.name.encode('utf8'), ge.g_id, ge.email) for ge in ges if ge.email]
     formatted_email = '; '.join(formatted_email)
     return formatted_email
 
