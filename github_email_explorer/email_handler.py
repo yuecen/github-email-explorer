@@ -65,11 +65,12 @@ def send_sendgrid(sendgrid_api_key=None, github_email_template=None, github_user
         mail = Mail(from_email, subject, to_email, content)
         _body = mail.get()
 
-        # Add custom args log fields
+        # Add custom args for log fields
         _custon = {}
         for key, value in metadata.iteritems():
             if key not in ESSENTIAL_FIELDS:
                 _custon[key] = value
+        _custon['repository'] = metadata['repository']
         _body['custom_args'] = _custon
 
         response = sg.client.mail.send.post(request_body=_body)
