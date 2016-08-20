@@ -129,7 +129,15 @@ def format_email(ges):
     """
     John (john2) <John@example.org>; Peter James (pjames) <James@example.org>
     """
-    formatted_email = ['{} ({}) <{}>'.format(ge.name.encode('utf8'), ge.g_id, ge.email) for ge in ges if ge.email]
+    formatted_email = []
+    for ge in ges:
+        if ge.email:
+            try:
+                formatted_email.append('{} ({}) <{}>'.format(ge.name.encode('utf8'), ge.g_id, ge.email))
+            except UnicodeEncodeError:
+                print ge
+                continue
+
     formatted_email = '; '.join(formatted_email)
     return formatted_email
 
