@@ -135,7 +135,7 @@ def format_email(ges):
             try:
                 formatted_email.append('{} ({}) <{}>'.format(ge.name.encode('utf8'), ge.g_id, ge.email))
             except UnicodeEncodeError:
-                print ge
+                print ge.g_id, ge.email
                 continue
 
     formatted_email = '; '.join(formatted_email)
