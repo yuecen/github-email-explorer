@@ -49,19 +49,19 @@ def send_sendgrid(sendgrid_api_key=None, github_email_template=None, github_user
 
     metadata = github_email_template.metadata
 
-    # Render subject with metadata
-    subject = template_env.from_string(metadata['subject']).render(metadata)
-
     from_email = Email(metadata['from'])
     for ge in github_user_emails:
 
         # Add github_user into metadata
         metadata['github_user'] = ge
 
-        to_email = Email(ge.email)
-
         # Render content with metadata
         content = Content("text/html", github_email_template.render_content(metadata))
+
+        # Render subject with metadata
+        subject = template_env.from_string(metadata['subject']).render(metadata)
+
+        to_email = Email(ge.email)
         mail = Mail(from_email, subject, to_email, content)
         _body = mail.get()
 
