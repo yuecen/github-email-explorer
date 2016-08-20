@@ -7,6 +7,7 @@ from jinja2 import Environment
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Email, Content, Mail
 
+import codecs
 import re
 import sys
 
@@ -14,13 +15,8 @@ import sys
 template_loader = FileSystemLoader(searchpath="/")
 template_env = Environment(loader=template_loader)
 
-
-class EmailContent(object):
-    def __init__(self):
-        self.email_from = None
-        self.email_to = None
-        self.email_content = None
-        self.provider = None
+ESSENTIAL_FIELDS = ['subject', 'from', 'github_user',
+                    'repository', 'repository_owner', 'repository_name']
 
 
 def parse_email(address):
@@ -30,33 +26,53 @@ def parse_email(address):
     return name.decode('utf8'), g_id, email
 
 
-def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
+def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, github_email_template=None):
     email_list = re.split(';', email_list)
     github_user_emails = [GithubUserEmail(parse_email(address)) for address in email_list if len(address.strip()) > 0]
 
     send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
-                  email_template=email_template, from_email=from_email, subject=subject)
+                  github_email_template=github_email_template)
 
 
-def send_sendgrid_by_ges(github_user_emails=None, sendgrid_api_key=None, email_template=None, from_email=None, subject=None):
+def send_sendgrid_by_ges(github_user_emails=None, sendgrid_api_key=None, github_email_template=None):
     github_user_emails = [ge for ge in github_user_emails if ge.email]
 
     send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
-                  email_template=email_template, from_email=from_email, subject=subject)
+                  github_email_template=github_email_template)
 
 
-def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails=None, from_email=None, subject=None):
+def send_sendgrid(sendgrid_api_key=None, github_email_template=None, github_user_emails=None):
 
     assert sendgrid_api_key, "SendGrid API key is required"
 
     sg = SendGridAPIClient(apikey=sendgrid_api_key)
 
-    from_email = Email(from_email)
+    metadata = github_email_template.metadata
+
+    # Render subject with metadata
+    subject = template_env.from_string(metadata['subject']).render(metadata)
+
+    from_email = Email(metadata['from'])
     for ge in github_user_emails:
+
+        # Add github_user into metadata
+        metadata['github_user'] = ge
+
         to_email = Email(ge.email)
-        content = Content("text/html", email_template.render(github_user=ge))
+
+        # Render content with metadata
+        content = Content("text/html", github_email_template.render_content(metadata))
         mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body=mail.get())
+        _body = mail.get()
+
+        # Add custom args log fields
+        _custon = {}
+        for key, value in metadata.iteritems():
+            if key not in ESSENTIAL_FIELDS:
+                _custon[key] = value
+        _body['custom_args'] = _custon
+
+        response = sg.client.mail.send.post(request_body=_body)
 
         if response.status_code > 300:
             # More than 300 means something wrong, do nothing.
@@ -64,28 +80,61 @@ def send_sendgrid(sendgrid_api_key=None, email_template=None, github_user_emails
 
 
 def get_email_template(path):
-    return GitHubEmailTemplate(path)
+    github_email_template = GitHubEmailTemplate()
+    github_email_template.set_material(path)
+    return github_email_template
 
 
-class GitHubEmailTemplate(object):
-    def __init__(self, template_path):
-        self.template_path = template_path
-        self._email_template = template_env.get_template(template_path)
+class BaseReader(object):
+    def __init__(self, *args, **kwargs):
+        pass
 
-        self.repo = None
+    def read(self, source_path):
+        """Return metadata and template"""
+        material = material_open(source_path)
+        res = re.match(r'(?P<metadata>[\s\S]*?)\n\n(?P<template>[\s\S]*)', material).groupdict()
+        return self._parse_metadata(res['metadata']), res['template']
 
-    def render(self, **kwargs):
-        return self._email_template.render(kwargs, repo=self.repo)
+    def _parse_metadata(self, meta):
+        # add essential fields
+        format_meta = {ess_field: '' for ess_field in ESSENTIAL_FIELDS}
+        res = re.findall(r'([\s\S]*?):([\s\S]*?)(\n|$)', meta)
+        for r in res:
+            format_meta[r[0].strip()] = r[1].strip()
+
+        return format_meta
+
+
+class GitHubEmailTemplate(BaseReader):
+    def __init__(self, *args, **kwargs):
+        super(GitHubEmailTemplate, self).__init__(*args, **kwargs)
+        self._email_template = None
+        self.metadata = {}
+
+    def set_material(self, source_path):
+        self.metadata, template = self.read(source_path)
+        self._email_template = template_env.from_string(template)
+
+    def render_content(self, meta):
+        """Render email content with a template."""
+        if meta:
+            return self._email_template.render(meta)
+        else:
+            return self._email_template.render(self.metadata)
+
+
+def material_open(filename, mode='rb', strip_crs=(sys.platform == 'win32')):
+    with codecs.open(filename, mode, encoding='utf-8') as infile:
+        content = infile.read()
+    if content[0] == codecs.BOM_UTF8.decode('utf8'):
+        content = content[1:]
+    if strip_crs:
+        content = content.replace('\r\n', '\n')
+    return content
 
 
 if __name__ == '__main__':
     # send_sendgrid_by_email_list(' <John@example.org>; Peter James <James@example.org>;')
 
-    def record_args(name, d):
-        from collections import namedtuple
-        return namedtuple(name, d.keys())(**d)
-
     gt = GitHubEmailTemplate('../examples/marketing_email.txt')
-    gt.repo = record_args('repo', {'owner': 'yuecen', 'name': 'github-email-explorer'})
-    ge = GithubUserEmail(('test', 'test@example.com'))
-    print gt.render(github_user=ge)
+    print gt.render()

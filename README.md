@@ -78,8 +78,16 @@ individual email address.
 Here is an example to use following syntax, the file saved to ```examples/marketing_email.txt```
 
 ```
+subject: Thanks for using {{repository}}
+from: test@example.com
+github_user:
+repository: yuecen/github-email-explorer
+repository_owner: yuecen
+repository_name: github-email-explorer
+site: GitHub
+
 <p>Hi {{ github_user.name }} ({{ github_user.g_id }}),</p>
-<p>Thank you for trying {{ repo.owner }}/{{ repo.name }}!</p>
+<p>Thank you for trying {{ repository_owner }}/{{ repository_name }}!</p>
 
 <p>...</p>
 
@@ -88,6 +96,17 @@ Here is an example to use following syntax, the file saved to ```examples/market
 ```
 
 Using the syntax ```{{ ... }}``` to assign value in runtime stage for email content.
+
+| Field           | Description   |
+| --------------- |:------------- |
+| subject         | email subject  |
+| from            | address from  |
+| github_user     | address to    |
+| repository      | full repository name on GitHub|
+| repository_owner| repository owner |
+| repository_name | repository name  |
+
+```site``` is not a essential field, it will be in SendGrid custom_args field for log
 
 ##### 2. Send Email
 
@@ -98,12 +117,7 @@ result of ge-explore and SendGrid to approach it.
 ge-sendgrid --api_user <your_sendgrid_api_user_name> 
             --api_key <your_sendgrid_api_key> 
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
-            --from_email test@example.com
-            --repo <owner>/<repo>
-            --list "John <John@example.org>; Peter James <James@example.org>"
 ```
-
-```--repo``` and ```--list``` are mutually exclusive.
 
 The following image is an real example of email format for ge-sendgrid command.
 
@@ -159,22 +173,16 @@ optional arguments:
 ```
 $ ge-sendgrid -h
 usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
-                   --subject SUBJECT --from_email FROM_EMAIL [--repo REPO]
                    [--action_type ACTION_TYPE [ACTION_TYPE ...]]
                    [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
-                   [--list LIST]
 
 optional arguments:
   -h, --help                                  show this help message and exit
   --api_key API_KEY                           Your KEY of SendGrid API
   --template_path TEMPLATE_PATH               Your email template
-  --subject SUBJECT                           Subject of email
-  --from_email FROM_EMAIL                     Address form
-  --repo REPO                                 Repo on Github, type "<owner>/<repo>"
   --action_type ACTION_TYPE [ACTION_TYPE ...] "star", "fork" and "watch" are the only three options now
   --client_id CLIENT_ID                       Github OAuth client ID
   --client_secret CLIENT_SECRET               Github OAuth client secret
-  --list LIST                                 Email list
 ```
 
 [rate limit]:https://developer.github.com/v3/rate_limit/
