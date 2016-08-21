@@ -23,7 +23,7 @@ def parse_email(address):
     r = re.match('(?P<name>.*)\s*\((?P<g_id>.*)\)\s<(?P<email>.*?)>', address)
     e = r.groupdict()
     name, g_id, email = e['name'], e['g_id'], e['email']
-    return name.decode('utf8'), g_id, email
+    return name, g_id, email
 
 
 def parse_into_github_user_emails(email_list):
