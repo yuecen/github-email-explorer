@@ -3,9 +3,9 @@
 import argparse
 
 import github_email
-from email_handler import send_sendgrid_by_ges
-from email_handler import send_sendgrid_by_email_list
 from email_handler import get_email_template
+from email_handler import parse_into_github_user_emails
+from email_handler import send_sendgrid_by_ges
 
 
 class SendGridCliArgs(object):
@@ -37,9 +37,11 @@ def send_email_by_sendgrid():
     # List first
     if metadata['github_user']:
         print "Send email by list..."
-        send_sendgrid_by_email_list(email_list=metadata['github_user'],
-                                    sendgrid_api_key=sendgrid_cli_args.api_key,
-                                    github_email_template=github_email_template)
+        ges = parse_into_github_user_emails(metadata['github_user'])
+        print 'Total email addresses from list: {}'.format(len(ges))
+        send_sendgrid_by_ges(github_user_emails=ges,
+                             sendgrid_api_key=sendgrid_cli_args.api_key,
+                             github_email_template=github_email_template)
 
     else:
         print "Send email by exploring..."

@@ -26,12 +26,10 @@ def parse_email(address):
     return name.decode('utf8'), g_id, email
 
 
-def send_sendgrid_by_email_list(email_list=None, sendgrid_api_key=None, github_email_template=None):
+def parse_into_github_user_emails(email_list):
     email_list = re.split(';', email_list)
     github_user_emails = [GithubUserEmail(parse_email(address)) for address in email_list if len(address.strip()) > 0]
-
-    send_sendgrid(github_user_emails=github_user_emails, sendgrid_api_key=sendgrid_api_key,
-                  github_email_template=github_email_template)
+    return github_user_emails
 
 
 def send_sendgrid_by_ges(github_user_emails=None, sendgrid_api_key=None, github_email_template=None):
