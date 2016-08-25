@@ -43,32 +43,32 @@ with the command above. Get *Client ID* and *Client Secret* by [OAuth applicatio
 ```python
 from github_email_explorer import github_email
 
-# github_api_auth = ('<your_client_id>', '<your_client_secret>')
-# ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star'], github_api_auth=github_api_auth)
-
-ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star'])
+ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star', 'watch'])
 
 for ge in ges:
-    print ge.name, "->", ge.email
-```
+    print ge.g_id, "->", ge.name, ",", ge.email
 
-You can find get_email.py file in *examples* folder, and run it like following.
+# With Authentication
+# github_api_auth = ('<your_client_id>', '<your_client_secret>')
+# ges = github_email.collect_email_info('yuecen', 'github-email-explorer', ['star', 'watch'],
+#                                        github_api_auth=github_api_auth)
+```
 
 ```bash
 $ python examples/get_email.py
 
-// example output
-John -> John@example.org
-Peter James -> James@example.org
+0john123 -> P.J. John, john@example.org
+pjames56 -> Peter James, james@example.org
 ```
+
+You can find get_email.py in *examples* folder.
 
 ### How to Send a Email to GitHub Users from a Particular Repository?
 
 #### 1. Write Email Content with Template Format
 
-The [Jinja2] is used to render email content in github-email-explorer, the basic 
-[expressions] make email content more flexible for sending to people they have 
-individual email address.
+The [Jinja2] is used to render email content in github-email-explorer, basic 
+[expressions] make email content more flexible for personal information.
 
 Here is an example to use following syntax, the file saved to ```examples/marketing_email.txt```
 
@@ -93,7 +93,7 @@ site: GitHub
 | Metadata Field  | Description   |
 | --------------- |:------------- |
 | subject         | email subject |
-| from            | address from  |
+| from            | sender address|
 | user            | if you don't put an email list, the repository field will be used for running ge-explore to get email list. |
 | repository      | full repository name on GitHub|
 | repository_owner| repository owner |
@@ -119,8 +119,8 @@ The following image is an real example of email format for ge-sendgrid command.
 
 ### More...
 
-In order to know API [rate limit] you are using, the status information can be 
-found from github-email-explorer command.
+In order to understand API [rate limit] you are using, the status information 
+can be found by github-email-explorer command.
 
 Without authentication
 
