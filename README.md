@@ -7,7 +7,7 @@ For people who want to create an email marketing plan for particular group on
 GitHub, github-email-explorer can collect addresses from a repository you want, 
 and then send email content to those email addresses.
 
-#### Installation
+### Installation
 
 ```bash
 pip install github-email-explorer
@@ -20,9 +20,9 @@ There are two commends can be used in github-email-explorer,
 
 SendGrid is only one email provider at current progress.
 
-#### Example of Getting Email Addresses from Stargazers, Forks or Watchers
+### Example of Getting Email Addresses from Stargazers, Forks or Watchers
 
-##### A. Using Command
+#### A. Using Command
 
 ```bash
 $ ge-explore --repo yuecen/github-email-explorer --action_type star fork watch
@@ -38,7 +38,7 @@ email service you have, then send your email with those contact address.
 the command, please add ```--client_id <your_github_auth_id> --client_secret <your_github_auth_secret>``` 
 with the command above. Get *Client ID* and *Client Secret* by [OAuth applications].)
 
-##### B. Using Python Script
+#### B. Using Python Script
 
 ```python
 from github_email_explorer import github_email
@@ -62,9 +62,9 @@ John -> John@example.org
 Peter James -> James@example.org
 ```
 
-#### How to Send a Email to GitHub Users from a Particular Repository?
+### How to Send a Email to GitHub Users from a Particular Repository?
 
-##### 1. Write Email Content with Template Format
+#### 1. Write Email Content with Template Format
 
 The [Jinja2] is used to render email content in github-email-explorer, the basic 
 [expressions] make email content more flexible for sending to people they have 
@@ -90,28 +90,26 @@ site: GitHub
 <p>yuecen</p>
 ```
 
-Using the syntax ```{{ ... }}``` to assign value in runtime stage for email content.
-
-| Field           | Description   |
+| Metadata Field  | Description   |
 | --------------- |:------------- |
 | subject         | email subject |
 | from            | address from  |
-| user.g_id       | user GitHub ID|
-| user.name       | user name     |
+| user            | if you don't put an email list, the repository field will be used for running ge-explore to get email list. |
 | repository      | full repository name on GitHub|
 | repository_owner| repository owner |
 | repository_name | repository name  |
 
 ```site``` is not a essential field, it will be in SendGrid custom_args field for log
 
-##### 2. Send Email
+You can use syntax ```{{ ... }}``` to substitute metadata field in runtime stage for personal information.
+
+#### 2. Send Email
 
 In order to send email to many users flexibly, we combine the email list from 
 result of ge-explore and SendGrid to approach it.
 
 ```
-ge-sendgrid --api_user <your_sendgrid_api_user_name> 
-            --api_key <your_sendgrid_api_key> 
+ge-sendgrid --api_key <your_sendgrid_api_key> 
             --template_path <github-email-explorer_folder_path>/examples/marketing_email.txt
 ```
 
@@ -119,7 +117,7 @@ The following image is an real example of email format for ge-sendgrid command.
 
 > <img src="examples/marketing_email.png" width="300">
 
-#### Example of Getting API Status
+### More...
 
 In order to know API [rate limit] you are using, the status information can be 
 found from github-email-explorer command.
