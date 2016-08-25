@@ -13,37 +13,32 @@ and then send email content to those email addresses.
 pip install github-email-explorer
 ```
 
-There are two main abilities, exploring email and sending email, in 
-github-email-explorer that the concreted commends are ```ge-explore``` and ```ge-sendgrid```. 
+There are two commends can be used in github-email-explorer,
+
+* ```ge-explore```: Get email address list from stargazers, forks or watchers on a repository
+* ```ge-sendgrid```: Send email by list or repository name with SendGrid API
+
 SendGrid is only one email provider at current progress.
 
 #### Example of Getting Email Addresses from Stargazers, Forks or Watchers
 
-The GitHub users can do some activities such as starring, watching, or forking 
-on repositories. Email address can be extracted from those activities.
-
-##### Using Command
-You can get user email by ```ge-explore``` with ```<owner>/<repo>```. For example, 
+##### A. Using Command
 
 ```bash
-
 $ ge-explore --repo yuecen/github-email-explorer --action_type star fork watch
  
 John (john2) <John@example.org>; Peter James (pjames) <James@example.org>;
-// The email addresses are responded in a formatted string.
 ```
 
-You can copy contact list to any email service you have, then send your email 
-with those contact address.
+You can get user email by ```ge-explore``` with ```<owner>/<repo>```. The email 
+addresses are responded in a formatted string. You can copy contact list to any 
+email service you have, then send your email with those contact address.
 
-If you encounter the situation of limitation from GitHub server during running 
-the command, please add ```--client_id <your_github_auth_id> --client_secret <your_github_auth_secret>``` with the command above.
+(If you encounter the situation of limitation from GitHub server during running 
+the command, please add ```--client_id <your_github_auth_id> --client_secret <your_github_auth_secret>``` 
+with the command above. Get *Client ID* and *Client Secret* by [OAuth applications].)
 
-You can apply and get *Client ID* and *Client Secret* by [OAuth applications].
-
-<img src="examples/oauth_github.png" width="500">
-
-##### Using Python Script
+##### B. Using Python Script
 
 ```python
 from github_email_explorer import github_email
@@ -57,7 +52,7 @@ for ge in ges:
     print ge.name, "->", ge.email
 ```
 
-You can find get_email.py file in examples folder, and run it like following.
+You can find get_email.py file in *examples* folder, and run it like following.
 
 ```bash
 $ python examples/get_email.py
@@ -80,13 +75,13 @@ Here is an example to use following syntax, the file saved to ```examples/market
 ```
 subject: Thanks for using {{repository}}
 from: test@example.com
-github_user:
+user:
 repository: yuecen/github-email-explorer
 repository_owner: yuecen
 repository_name: github-email-explorer
 site: GitHub
 
-<p>Hi {{ github_user.name }} ({{ github_user.g_id }}),</p>
+<p>Hi {{ user.name }} ({{ user.g_id }}),</p>
 <p>Thank you for trying {{ repository_owner }}/{{ repository_name }}!</p>
 
 <p>...</p>
@@ -99,9 +94,10 @@ Using the syntax ```{{ ... }}``` to assign value in runtime stage for email cont
 
 | Field           | Description   |
 | --------------- |:------------- |
-| subject         | email subject  |
+| subject         | email subject |
 | from            | address from  |
-| github_user     | address to    |
+| user.g_id       | user GitHub ID|
+| user.name       | user name     |
 | repository      | full repository name on GitHub|
 | repository_owner| repository owner |
 | repository_name | repository name  |
@@ -153,37 +149,6 @@ Core                5000         5000  2016-07-06T07:59:47Z
 Search                30           30  2016-07-06T07:00:47Z
 ```
 
-#### Command Usage
-
-```
-$ ge-explore -h
-usage: ge-explore [-h] [--repo REPO] [--action_type ACTION_TYPE]
-                  [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
-                  [--status]
-
-optional arguments:
-  -h, --help                      show this help message and exit
-  --repo REPO                     Repo on Github, type "<owner>/<repo>"
-  --action_type ACTION_TYPE       "star", "fork" and "watch" are the only three options now
-  --client_id CLIENT_ID           Github OAuth client ID
-  --client_secret CLIENT_SECRET   Github OAuth client secret
-  --status                        Github API status
-```
-
-```
-$ ge-sendgrid -h
-usage: ge-sendgrid [-h] [--api_key API_KEY] [--template_path TEMPLATE_PATH]
-                   [--action_type ACTION_TYPE [ACTION_TYPE ...]]
-                   [--client_id CLIENT_ID] [--client_secret CLIENT_SECRET]
-
-optional arguments:
-  -h, --help                                  show this help message and exit
-  --api_key API_KEY                           Your KEY of SendGrid API
-  --template_path TEMPLATE_PATH               Your email template
-  --action_type ACTION_TYPE [ACTION_TYPE ...] "star", "fork" and "watch" are the only three options now
-  --client_id CLIENT_ID                       Github OAuth client ID
-  --client_secret CLIENT_SECRET               Github OAuth client secret
-```
 
 [rate limit]:https://developer.github.com/v3/rate_limit/
 [OAuth applications]:https://github.com/settings/developers

@@ -1,13 +1,13 @@
 subject: Thanks for trying {{repository}}
 from: test@example.com
-github_user:
+user:
 repository: yuecen/github-email-explorer
 repository_owner: yuecen
 repository_name: github-email-explorer
 site: GitHub
 
-<p>Hi {{ github_user.name }} ({{ github_user.g_id }}),</p>
-<p>Thank you for trying {{ repository_owner }}/{{ repository_name }}!</p>
+<p>Hi {{user.name}} ({{user.g_id}}),</p>
+<p>Thank you for trying {{repository_owner}}/{{repository_name}}!</p>
 
 <p>...</p>
 

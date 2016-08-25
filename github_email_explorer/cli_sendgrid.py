@@ -35,9 +35,9 @@ def send_email_by_sendgrid():
     github_email_template = get_email_template(sendgrid_cli_args.template_path)
     metadata = github_email_template.metadata
     # List first
-    if metadata['github_user']:
+    if metadata['user']:
         print "Send email by list..."
-        ges = parse_into_github_user_emails(metadata['github_user'])
+        ges = parse_into_github_user_emails(metadata['user'])
         print 'Total email addresses from list: {}'.format(len(ges))
         send_sendgrid_by_ges(github_user_emails=ges,
                              sendgrid_api_key=sendgrid_cli_args.api_key,

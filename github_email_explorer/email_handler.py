@@ -15,16 +15,19 @@ import sys
 template_loader = FileSystemLoader(searchpath="/")
 template_env = Environment(loader=template_loader)
 
-ESSENTIAL_FIELDS = ['subject', 'from', 'github_user',
+ESSENTIAL_FIELDS = ['subject', 'from', 'user',
                     'repository', 'repository_owner', 'repository_name']
 
 
 def parse_email(address):
     r = re.match('(?P<name>.*)\s*\((?P<g_id>.*)\)\s<(?P<email>.*?)>', address)
-    e = r.groupdict()
-    name, g_id, email = e['name'], e['g_id'], e['email']
-    return name, g_id, email
+    if r:
+        e = r.groupdict()
+        name, g_id, email = e['name'].strip(), e['g_id'].strip(), e['email'].strip()
+    else:
+        name, g_id, email = '', '', address.strip()
 
+    return name, g_id, email
 
 def parse_into_github_user_emails(email_list):
     email_list = re.split(';', email_list)
@@ -51,7 +54,7 @@ def send_sendgrid(sendgrid_api_key=None, github_email_template=None, github_user
     for ge in github_user_emails:
 
         # Add github_user into metadata
-        metadata['github_user'] = ge
+        metadata['user'] = ge
 
         # Render content with metadata
         content = Content("text/html", github_email_template.render_content(metadata))
@@ -135,5 +138,6 @@ def material_open(filename, mode='rb', strip_crs=(sys.platform == 'win32')):
 if __name__ == '__main__':
     # send_sendgrid_by_email_list(' <John@example.org>; Peter James <James@example.org>;')
 
-    gt = GitHubEmailTemplate('../examples/marketing_email.txt')
-    print gt.render()
+    gt = GitHubEmailTemplate()
+    gt.set_material('../examples/marketing_email.txt')
+    print gt.render_content()
