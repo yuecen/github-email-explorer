@@ -15,7 +15,7 @@ import sys
 template_loader = FileSystemLoader(searchpath="/")
 template_env = Environment(loader=template_loader)
 
-ESSENTIAL_FIELDS = ['subject', 'from', 'user',
+ESSENTIAL_FIELDS = ['subject', 'from', 'from_name', 'user',
                     'repository', 'repository_owner', 'repository_name']
 
 
@@ -51,6 +51,7 @@ def send_sendgrid(sendgrid_api_key=None, github_email_template=None, github_user
     metadata = github_email_template.metadata
 
     from_email = Email(metadata['from'])
+    from_email.name = metadata['from_name']
     for ge in github_user_emails:
 
         # Add github_user into metadata

@@ -94,6 +94,7 @@ site: GitHub
 | --------------- |:------------- |
 | subject         | email subject |
 | from            | sender address|
+| from_name       | sender name   |
 | user            | you can put an email list with a well format for parse user's ```name``` and ```g_id```. For example, ```John (john2) <John@example.org>; Peter James (pjames) <James@example.org>```. If you don't put an email list, the repository field will be used for running ge-explore to get email list. |
 | repository      | full repository name on GitHub|
 | repository_owner| repository owner |
