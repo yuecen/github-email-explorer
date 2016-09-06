@@ -20,7 +20,7 @@ ESSENTIAL_FIELDS = ['subject', 'from', 'user',
 
 
 def parse_email(address):
-    r = re.match('(?P<name>.*)\s*\((?P<g_id>.*)\)\s<(?P<email>.*?)>', address)
+    r = re.match('(?P<name>.*)\s*\((?P<g_id>.*)\)\s*<(?P<email>.*?)>', address)
     if r:
         e = r.groupdict()
         name, g_id, email = e['name'].strip(), e['g_id'].strip(), e['email'].strip()
