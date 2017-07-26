@@ -11,6 +11,10 @@ class GitHubEndPoint(object):
         return '{}users/{}'.format(GitHubEndPoint.api_url, user_id)
 
     @staticmethod
+    def user_events(user_id):
+        return '{}users/{}/events/public'.format(GitHubEndPoint.api_url, user_id)
+
+    @staticmethod
     def repository(user_id, repo):
         return '{}repos/{}/{}'.format(GitHubEndPoint.api_url, user_id, repo)
 

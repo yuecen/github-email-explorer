@@ -10,10 +10,12 @@ class GithubUserEmail(object):
         self.g_id = None
         self.name = kwargs.get('name', None)
         self.email = kwargs.get('email', None)
+        self.from_profile = kwargs.get('from_profile', None)
         if len(args) > 0 and (type(args[0]) is tuple):
             self.name = args[0][0]
             self.g_id = args[0][1]
             self.email = args[0][2]
+            self.from_profile = args[0][3]
 
 
 class GithubAPIStatus(object):
@@ -104,6 +106,22 @@ def users_email_info(action_user_ids, github_api_auth):
 
     return ges
 
+def get_email_from_events(rsp, name):
+    """
+    Parses out the email, if available from a user's public events
+    """
+    rsp = rsp.json()
+    for event in rsp:
+        payload = event.get('payload')
+        if payload is not None:
+            commits = payload.get('commits')
+            if commits is not None:
+                for commit in commits:
+                    author = commit.get('author')
+                    if author['name'] == name:
+                        return author.get('email')
+
+    return None
 
 def request_user_email(user_id, github_api_auth):
     """
@@ -117,11 +135,21 @@ def request_user_email(user_id, github_api_auth):
     rsp = rsp.json()
     ge = GithubUserEmail()
     ge.g_id = rsp['login']
-    ge.name = rsp['name'] if rsp['name'] else rsp['login']
+    ge.name = rsp['name'].strip() if rsp['name'] else rsp['login']
     ge.email = rsp['email']
+    ge.from_profile = True
 
-    # TODO user email from events
+    # Get user email from events
+    if ge.email is None:
+        rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_events(user_id), github_api_auth))
+        # raise error when found nothing
+        rsp.raise_for_status()
 
+        email = get_email_from_events(rsp, ge.name)
+        if email is not None:
+            ge.email = email
+            ge.from_profile = False
+        
     return ge
 
 
@@ -133,12 +161,12 @@ def format_email(ges):
     for ge in ges:
         if ge.email:
             try:
-                formatted_email.append('{} ({}) <{}>'.format(ge.name.encode('utf8'), ge.g_id, ge.email))
+                formatted_email.append('{} ({}) <{}> [{}]'.format(ge.name.encode('utf8'), ge.g_id, ge.email, ge.from_profile))
             except UnicodeEncodeError:
-                print ge.g_id, ge.email
+                print ge.g_id, ge.email, ge.from_profile
                 continue
 
-    formatted_email = '; '.join(formatted_email)
+    formatted_email = '\n'.join(formatted_email)
     return formatted_email
 
 
