@@ -161,8 +161,11 @@ def user_has_opted_out(email):
     """
     Checks if an email address was marked as opt-out
     """
-	regex = re.compile('\\+[^@]*optout@g(?:oogle)?mail\\.com$', re.IGNORECASE)
-	return regex.search(email) is not None
+    if email is not None:
+        regex = re.compile('\\+[^@]*optout@g(?:oogle)?mail\\.com$', re.IGNORECASE)
+        return regex.search(email) is not None
+    else:
+        return False
 
 
 def format_email(ges):
