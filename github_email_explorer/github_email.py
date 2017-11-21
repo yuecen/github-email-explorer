@@ -3,6 +3,7 @@
 from collections import OrderedDict
 import requests
 from api_url import GitHubEndPoint as EndPoint
+import re
 
 
 class GithubUserEmail(object):
@@ -149,8 +150,19 @@ def request_user_email(user_id, github_api_auth):
         if email is not None:
             ge.email = email
             ge.from_profile = False
-        
+
+    # Check if user opted out and respect that
+    if user_has_opted_out(ge.email):
+        ge.email = None
+
     return ge
+
+def user_has_opted_out(email):
+    """
+    Checks if an email address was marked as opt-out
+    """
+	regex = re.compile('\\+[^@]*optout@g(?:oogle)?mail\\.com$', re.IGNORECASE)
+	return regex.search(email) is not None
 
 
 def format_email(ges):
