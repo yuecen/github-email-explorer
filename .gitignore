@@ -6,3 +6,5 @@ venv
 *.log
 *.egg-info
 dist
+__pycache__
+*.csv

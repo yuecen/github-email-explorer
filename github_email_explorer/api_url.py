@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from urllib import urlencode
-from urlparse import parse_qs, urlsplit, urlunsplit
+from urllib.parse import urlencode, parse_qs, urlsplit, urlunsplit
 
 
 class GitHubEndPoint(object):

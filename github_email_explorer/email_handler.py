@@ -141,4 +141,4 @@ if __name__ == '__main__':
 
     gt = GitHubEmailTemplate()
     gt.set_material('../examples/marketing_email.txt')
-    print gt.render_content()
+    print(gt.render_content())

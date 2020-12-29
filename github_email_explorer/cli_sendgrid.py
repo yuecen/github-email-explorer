@@ -36,19 +36,19 @@ def send_email_by_sendgrid():
     metadata = github_email_template.metadata
     # List first
     if metadata['user']:
-        print "Send email by list..."
+        print("Send email by list...")
         ges = parse_into_github_user_emails(metadata['user'])
-        print 'Total email addresses from list: {}'.format(len(ges))
+        print('Total email addresses from list: {}'.format(len(ges)))
         send_sendgrid_by_ges(github_user_emails=ges,
                              sendgrid_api_key=sendgrid_cli_args.api_key,
                              github_email_template=github_email_template)
 
     else:
-        print "Send email by exploring..."
+        print("Send email by exploring...")
         # explore users email by action types
         github_api_auth = (sendgrid_cli_args.client_id, sendgrid_cli_args.client_secret)
         ges = github_email.collect_email_info(metadata['repository_owner'], metadata['repository_name'], sendgrid_cli_args.action_type, github_api_auth)
-        print 'Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges))
+        print('Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges)))
 
         # send email by py-sendgrid
         send_sendgrid_by_ges(github_user_emails=ges,
