@@ -62,14 +62,17 @@ def integrate_user_ids(user_id, repo, actions, github_api_auth):
     for action_type in actions:
         # get repo
         github_repo = repository(user_id, repo, github_api_auth)
-        
+
         # pagination
         per_page = 100
-        total_pages = math.ceil(select_action_count(github_repo, action_type) / per_page)
+        total_pages = math.ceil(select_action_count(
+            github_repo, action_type) / per_page)
         # create url
-        url = EndPoint.add_auth_info(select_end_porint_builder(action_type)(user_id, repo), github_api_auth)
+        url = EndPoint.add_auth_info(select_end_porint_builder(
+            action_type)(user_id, repo), github_api_auth)
         # get id by rolling pages
-        user_ids = user_ids + request_user_ids_by_roll_pages(url, total_pages, per_page)
+        user_ids = user_ids + \
+            request_user_ids_by_roll_pages(url, total_pages, per_page)
 
     return OrderedDict.fromkeys(user_ids).keys()
 
@@ -85,14 +88,17 @@ def request_user_ids_by_roll_pages(url, total_pages, per_page):
         r.raise_for_status()
 
         # handling result
-        user_ids = user_ids + [info['login'] if 'login' in info else info['owner']['login'] for info in r.json()]
+        user_ids = user_ids + \
+            [info['login'] if 'login' in info else info['owner']['login']
+                for info in r.json()]
 
     return user_ids
 
 
 def collect_email_info(repo_user_id, repo_name, actions, github_api_auth=None):
     # get user ids
-    user_ids = integrate_user_ids(repo_user_id, repo_name, actions, github_api_auth)
+    user_ids = integrate_user_ids(
+        repo_user_id, repo_name, actions, github_api_auth)
     # get and return email info
     return users_email_info(user_ids, github_api_auth)
 
@@ -108,6 +114,7 @@ def users_email_info(action_user_ids, github_api_auth):
             return ges
 
     return ges
+
 
 def get_email_from_events(rsp, name):
     """
@@ -126,11 +133,13 @@ def get_email_from_events(rsp, name):
 
     return None
 
+
 def request_user_email(user_id, github_api_auth):
     """
     Get email from the profile
     """
-    rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_profile(user_id), github_api_auth))
+    rsp = requests.get(EndPoint.add_auth_info(
+        EndPoint.user_profile(user_id), github_api_auth))
     # raise error when found nothing
     rsp.raise_for_status()
 
@@ -143,7 +152,8 @@ def request_user_email(user_id, github_api_auth):
 
     # Get user email from events
     if ge.email is None:
-        rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_events(user_id), github_api_auth))
+        rsp = requests.get(EndPoint.add_auth_info(
+            EndPoint.user_events(user_id), github_api_auth))
         # raise error when found nothing
         rsp.raise_for_status()
 
@@ -156,17 +166,34 @@ def request_user_email(user_id, github_api_auth):
     if user_has_opted_out(ge.email):
         ge.email = None
 
+    # Check if email can be used and not a noreply
+    if email_is_github_noreply(ge.email):
+        ge.email = None
+
     return ge
+
 
 def user_has_opted_out(email):
     """
     Checks if an email address was marked as opt-out
     """
     if email is not None:
-        regex = re.compile('\\+[^@]*optout@g(?:oogle)?mail\\.com$', re.IGNORECASE)
+        regex = re.compile(
+            '\\+[^@]*optout@g(?:oogle)?mail\\.com$', re.IGNORECASE)
         return regex.search(email) is not None
     else:
         return False
+
+
+def email_is_github_noreply(email):
+    """Checks if an email address is a github noreply e.g name@users.noreply.github.com
+    Args:
+        email (string): email address being checked
+    """
+    if email is not None:
+        if email.split("@")[1] == "users.noreply.github.com":
+            return True
+    return False
 
 
 def format_email(ges):
@@ -177,7 +204,8 @@ def format_email(ges):
     for ge in ges:
         if ge.email:
             try:
-                formatted_email.append('{} ({}) <{}> [{}]'.format(ge.name.encode('utf8'), ge.g_id, ge.email, ge.from_profile))
+                formatted_email.append('{} ({}) <{}> [{}]'.format(
+                    ge.name.encode('utf8'), ge.g_id, ge.email, ge.from_profile))
             except UnicodeEncodeError:
                 print(f"{ge.g_id}, {ge.email}, {ge.from_profile}")
                 continue
@@ -187,7 +215,8 @@ def format_email(ges):
 
 
 def api_status(github_api_auth):
-    rsp = requests.get(EndPoint.add_auth_info(EndPoint.rate_limit(), github_api_auth))
+    rsp = requests.get(EndPoint.add_auth_info(
+        EndPoint.rate_limit(), github_api_auth))
     rsp = rsp.json()
     status = GithubAPIStatus()
     status.core_reset_time = rsp['resources']['core']['reset']
@@ -200,7 +229,8 @@ def api_status(github_api_auth):
 
 
 def repository(user_id, repo, github_api_auth):
-    rsp = requests.get(EndPoint.add_auth_info(EndPoint.repository(user_id, repo), github_api_auth))
+    rsp = requests.get(EndPoint.add_auth_info(
+        EndPoint.repository(user_id, repo), github_api_auth))
     rsp = rsp.json()
     repo = GithubRepository()
     repo.repo_id = rsp['id']
