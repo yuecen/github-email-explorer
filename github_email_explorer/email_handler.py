@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from github_email import GithubUserEmail
+from .github_email import GithubUserEmail
 
 from jinja2 import FileSystemLoader
 from jinja2 import Environment

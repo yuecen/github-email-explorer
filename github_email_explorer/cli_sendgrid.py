@@ -2,10 +2,10 @@
 
 import argparse
 
-import github_email
-from email_handler import get_email_template
-from email_handler import parse_into_github_user_emails
-from email_handler import send_sendgrid_by_ges
+from .github_email import collect_email_info
+from .email_handler import get_email_template
+from .email_handler import parse_into_github_user_emails
+from .email_handler import send_sendgrid_by_ges
 
 
 class SendGridCliArgs(object):
@@ -47,7 +47,7 @@ def send_email_by_sendgrid():
         print("Send email by exploring...")
         # explore users email by action types
         github_api_auth = (sendgrid_cli_args.client_id, sendgrid_cli_args.client_secret)
-        ges = github_email.collect_email_info(metadata['repository_owner'], metadata['repository_name'], sendgrid_cli_args.action_type, github_api_auth)
+        ges = collect_email_info(metadata['repository_owner'], metadata['repository_name'], sendgrid_cli_args.action_type, github_api_auth)
         print('Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges)))
 
         # send email by py-sendgrid

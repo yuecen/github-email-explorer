@@ -5,7 +5,7 @@ from tabulate import tabulate
 import argparse
 import re
 
-import github_email
+from .github_email import api_status, collect_email_info, format_email
 
 
 def record_args(name, d):
@@ -48,7 +48,7 @@ def get_github_email_by_repo():
 
     if explore_cli_args.status:
         # call api status
-        status = github_email.api_status(github_api_auth)
+        status = api_status(github_api_auth)
         table = [["Core", status.core_limit, status.core_remaining, datetime.utcfromtimestamp(status.core_reset_time).strftime('%Y-%m-%dT%H:%M:%SZ')],
                  ["Search", status.search_limit, status.search_remaining, datetime.utcfromtimestamp(status.search_reset_time).strftime('%Y-%m-%dT%H:%M:%SZ')]]
         print("== GitHub API Status ==")
@@ -57,10 +57,10 @@ def get_github_email_by_repo():
         return
 
     # handle action_type
-    ges = github_email.collect_email_info(
+    ges = collect_email_info(
         explore_cli_args.repo.owner, explore_cli_args.repo.name, explore_cli_args.action_type, github_api_auth)
     print('Total: {}/{}'.format(len([ge for ge in ges if ge.email]), len(ges)))
-    print(github_email.format_email(ges))
+    print(format_email(ges))
 
 
 if __name__ == '__main__':
