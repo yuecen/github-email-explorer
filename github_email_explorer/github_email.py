@@ -190,10 +190,14 @@ def email_is_github_noreply(email):
     Args:
         email (string): email address being checked
     """
-    if email is not None:
-        if email.split("@")[1] == "users.noreply.github.com":
-            return True
-    return False
+    try:
+        if email is not None:
+            if email.split("@")[1] == "users.noreply.github.com":
+                return True
+        return False
+    except Exception as ex:
+        print(ex)
+        return False
 
 
 def format_email(ges):
