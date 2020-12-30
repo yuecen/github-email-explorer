@@ -8,3 +8,4 @@ venv
 dist
 __pycache__
 *.csv
+data/

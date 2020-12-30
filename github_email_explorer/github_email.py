@@ -62,6 +62,7 @@ def integrate_user_ids(user_id, repo, actions, github_api_auth):
     for action_type in actions:
         # get repo
         github_repo = repository(user_id, repo, github_api_auth)
+        
         # pagination
         per_page = 100
         total_pages = math.ceil(select_action_count(github_repo, action_type) / per_page)
@@ -129,7 +130,6 @@ def request_user_email(user_id, github_api_auth):
     """
     Get email from the profile
     """
-
     rsp = requests.get(EndPoint.add_auth_info(EndPoint.user_profile(user_id), github_api_auth))
     # raise error when found nothing
     rsp.raise_for_status()
