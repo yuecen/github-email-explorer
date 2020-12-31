@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from github_email import GithubUserEmail
+from .github_email import GithubUserEmail
 
 from jinja2 import FileSystemLoader
 from jinja2 import Environment
@@ -141,4 +141,4 @@ if __name__ == '__main__':
 
     gt = GitHubEmailTemplate()
     gt.set_material('../examples/marketing_email.txt')
-    print gt.render_content()
+    print(gt.render_content())
