@@ -1,4 +1,4 @@
-Jinja2==2.8
+Jinja2==2.10.1
 MarkupSafe==0.23
 python-http-client==2.1.1
 requests==2.20.0
